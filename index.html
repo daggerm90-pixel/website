@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Dashboard</title></head>
+<body>
+  <h1>Verify Logs</h1>
+  <button onclick="fetchLogs()">Refresh Logs</button>
+  <pre id="logs"></pre>
+  <h1>Members</h1>
+  <button onclick="fetchMembers()">Pull Members</button>
+  <pre id="members"></pre>
+  <script>
+    async function fetchLogs() {
+      const res = await fetch('/api/logs');
+      const data = await res.json();
+      document.getElementById('logs').textContent = JSON.stringify(data, null, 2);
+    }
+    async function fetchMembers() {
+      const res = await fetch('/api/members');
+      const data = await res.json();
+      document.getElementById('members').textContent = JSON.stringify(data, null, 2);
+    }
+    fetchLogs();
+    fetchMembers();
+  </script>
+</body>
+</html>
